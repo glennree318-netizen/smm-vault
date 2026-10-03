@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
+  <title>SMM Vault - Monthly Planner &amp; Daily Checklist</title>
+  <meta name="description" content="Plan a whole month of social media tasks in one tap, then check them off daily. Brand kit, caption library, history and director reports. Works offline, everything stays on your phone.">
+  <meta name="theme-color" content="#0F0F0F">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SMM Vault">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Pre-paint background so there is no white flash on load */
+    html, body { margin: 0; background: #0F0F0F; color: #E8EAED; }
+    #boot {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: #0F0F0F; z-index: 999;
+    }
+    #boot span { font-size: 17px; font-weight: 600; color: #B0B7C3; letter-spacing: .01em; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="boot"><span>Opening vault...</span></div>
+  <script src="app.js"></script>
+  <script>
+    // Hide the boot splash only once React has painted
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var b = document.getElementById('boot');
+        if (b) b.remove();
+      }, 250);
+    });
+    if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>
