@@ -1,12 +1,13 @@
 /* SMM Vault service worker - full offline support.
    Everything is cached on install so the app works with no signal at all. */
-var CACHE = "smmvault-v1";
+var CACHE = "smmvault-v2";
 var ASSETS = [
   "./",
   "./index.html",
   "./app.js",
   "./styles.css",
   "./manifest.webmanifest",
+  "./robots.txt",
   "./icons/icon.svg",
   "./icons/icon-192.png",
   "./icons/icon-512.png"

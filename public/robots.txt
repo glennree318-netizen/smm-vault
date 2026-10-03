@@ -1,0 +1,5 @@
+# SMM Vault is a private tool, not a public site.
+# Keep it out of all search indexes. The URL still works for anyone who has it.
+
+User-agent: *
+Disallow: /
