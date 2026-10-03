@@ -13,6 +13,14 @@ console.log("--- build artifacts ---");
 ].forEach((f) => check("exists " + f, existsSync(f)));
 
 const bundle = readFileSync("public/app.js", "utf8");
+// Regression guard: the npm build script must escape the NODE_ENV define.
+// If the shell strips the quotes, esbuild substitutes a bare `production`
+// identifier and the app dies with "ReferenceError: production is not
+// defined" - a blank white page. Prod bundle is ~180KB, broken was ~500KB.
+check("bundle is production build (<250kb)", bundle.length < 250000);
+check("no bare `production` identifier (runtime ReferenceError)", (bundle.replace(/"[^"]*"/g, "").match(/(^|[^.\w$])production([^.\w$]|$)/g) || []).length === 0);
+const pkg = JSON.parse(readFileSync("package.json", "utf8"));
+check("package.json escapes NODE_ENV define", pkg.scripts.js.indexOf("NODE_ENV=" + String.fromCharCode(92) + String.fromCharCode(34)) !== -1);
 check("bundle is minified (<600kb)", bundle.length < 600000);
 check("bundle has no leftover JSX", !/<[a-z]+[A-Z][a-zA-Z]*\s/.test(bundle.slice(0, 2000)));
 
