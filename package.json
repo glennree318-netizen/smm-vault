@@ -6,7 +6,7 @@
   "scripts": {
     "icons": "node make-icons.cjs",
     "css": "tailwindcss -i src/input.css -o public/styles.css --minify",
-    "js": "esbuild src/main.jsx --bundle --minify --define:process.env.NODE_ENV=\\\"production\\\" --outfile=public/app.js",
+    "js": "esbuild src/main.jsx --bundle --minify --jsx=automatic --define:process.env.NODE_ENV=\\\"production\\\" --outfile=public/app.js",
     "build": "npm run icons && npm run css && npm run js",
     "verify": "node verify.mjs",
     "dev": "npm run build && npx serve public -l 3000"
