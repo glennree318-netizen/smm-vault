@@ -238,11 +238,21 @@ export function searchHistory(state, q) {
 }
 
 export function toCSV(rows) {
-  const esc = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  // Excel compatibility - all three details matter:
+  // 1. A leading = + - @ is prefixed with an apostrophe so Excel never
+  //    treats the text as a formula (CSV injection).
+  // 2. Every field is quoted and embedded quotes are doubled.
+  // 3. CRLF line endings. LF-only makes Excel join every row together.
+  // A UTF-8 BOM is added by exportCSV so accents survive on Windows.
+  const esc = (v) => {
+    let s = String(v == null ? "" : v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
   return (
-    ["Date,Task,Category,Completed At"].join(",") +
-    "\n" +
-    rows.map((r) => [r.date, r.text, r.kind || "", r.stamp].map(esc).join(",")).join("\n")
+    ["Date", "Task", "Category", "Completed At"].map(esc).join(",") +
+    "\r\n" +
+    rows.map((r) => [r.date, r.text, r.kind || "", r.stamp].map(esc).join(",")).join("\r\n")
   );
 }
 
@@ -267,10 +277,13 @@ export function exportJSON(state) {
 
 export function exportCSV(state) {
   const rows = allDoneEntries(state);
+  // The leading FEFF is a UTF-8 BOM. Without it, Excel on Windows renders
+  // accented characters (Noel, Jose, Spanish-Filipino names) as mojibake.
   downloadBlob(
-    new Blob([toCSV(rows)], { type: "text/csv" }),
+    new Blob(["\uFEFF" + toCSV(rows)], { type: "text/csv;charset=utf-8" }),
     "smmvault-history-" + dayKey(new Date()) + ".csv"
   );
+  return rows.length;
 }
 
 export function importJSON(text) {

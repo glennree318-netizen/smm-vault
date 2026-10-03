@@ -122,7 +122,8 @@ check("search by date works", store.searchHistory(state, "2026-11-28").length ==
 check("search misses return empty", store.searchHistory(state, "zzzz").length === 0);
 check("empty query returns all", store.searchHistory(state, "").length === 10);
 const csv = store.toCSV(all);
-check("csv has header", csv.startsWith("Date,Task,Category,Completed At"));
+check("csv header is quoted for Excel", csv.startsWith('"Date","Task","Category","Completed At"'));
+check("csv uses CRLF (Excel safe)", csv.includes("\r\n") && !/[^\r]\n/.test(csv));
 check("csv has a row per entry", csv.trim().split("\n").length === all.length + 1);
 
 console.log("--- haptics degrade safely ---");
